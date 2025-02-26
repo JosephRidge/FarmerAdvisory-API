@@ -1,5 +1,5 @@
 # Architecture:
 
-![alt text](image.png)
+![alt text](architecture.png)
 
 ---
