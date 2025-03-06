@@ -8,3 +8,4 @@ queries = {
 }
 
 DATA_DIR = "data"
+DOCUMENT_FETCH_SIZE = 70

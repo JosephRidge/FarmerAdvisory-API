@@ -8,17 +8,16 @@ import asyncio
 
 
 # lifespan to run task at start-up
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("API is initializing... 🚀")
-    await init()
-    yield  # API becomes available immediately
-    print("API shutdown...")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     print("API is initializing... 🚀")
+#     await init()
+#     yield  # API becomes available immediately
+#     print("API shutdown...")
 
 app = FastAPI(
     title="Farmer Advisor - API",
-    version="1.0",
-    lifespan=lifespan)
+    version="1.0" )
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,14 +34,18 @@ def read_root():
 def get_data():
     return { "documents":fetch_documents() }
 
+@app.get("/fetch-research")
+def get_data():
+    return { "documents":init() }
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "query": q}
+
+# @app.get("/items/{item_id}")
+# def read_item(item_id: int, q: Union[str, None] = None):
+#     return {"item_id": item_id, "query": q}
 
 
 # Storage for task results
-task_results = {"data": None}
+# task_results = {"data": None}
 
 # async def fetch_data():
 #     await asyncio.sleep(8.5)  # Simulating a long operation
