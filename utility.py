@@ -46,40 +46,12 @@ def fetch_documents():
     query_results = [result[0] for result in query_results]  
 
     dataframes = [to_data_frame(result) for result in query_results]
-    combined_corpus_df = pd.concat(dataframes, ignore_index=True)
-    return combined_corpus_df['results'] 
-# def fetch_documents(): 
-#     '''
-#     Fetch data using dictionary comprehension
-#     Convert API results to DataFrames
-#     Combine DataFrames efficiently
-#     '''
-#     # query_results = {key: query_api(query) for key, query in queries.items()}
-#     # dataframes = {key: to_data_frame(result) for key, result in query_results.items()}
-#     # combined_corpus_df = pd.concat(dataframes.values(), ignore_index=True)
-#     # return combined_corpus_df 
-#     with ProcessPoolExecutor() as executor:  # Multiprocessing instead of threading
-#         query_results = list(executor.map(query_api, queries.values()))  # Parallel fetch
-
-#     dataframes = [to_data_frame(result) for result in query_results]
-#     combined_corpus_df = pd.concat(dataframes, ignore_index=True)
-#     return combined_corpus_df 
-
-# async def fetch_text_documents():
-#      with aiofiles.open(file_path, "w") as f:
-#         await f.write("This is a fetched document for RAG processing.")
-
-
-# def chunk_text(combined_corpus_df:List[dict]):
-#     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-#     combined_corpus_df['chunks'] = combined_corpus_df['fullText'].dropna().apply(text_splitter.split_text) 
-#     all_chunks = [chunk for sublist in combined_corpus_df['chunks'].dropna() for chunk in sublist]
-#     len(all_chunks)  # Total number of text chunks
-#     print(f"Total number of chunks: {len(all_chunks)}") # remove when cleaning
-#     return all_chunks
+    combined_corpus_df = pd.concat(dataframes, ignore_index=True)   
+    return combined_corpus_df
 
 def chunk_text(combined_corpus_df):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    print(combined_corpus_df)
     with ThreadPoolExecutor() as executor:
         all_chunks = list(executor.map(text_splitter.split_text, combined_corpus_df['fullText'].dropna()))
     # Flatten the list
@@ -87,14 +59,6 @@ def chunk_text(combined_corpus_df):
     print(f"Total number of chunks: {len(all_chunks)}")
     return all_chunks
 
-# def create_vector_db(chunks):
-#     embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-#     vector_store = Chroma(
-#     collection_name="farm_advisor",
-#     embedding_function=embedding_function,
-#     persist_directory="./chroma_langchain_db",  # Where to save data locally, persistence
-#     )
-#     vector_store.add_texts(chunks) # took 28min for 231 articles, and Total number of chunks: 27675
 
 def create_vector_db(chunks, batch_size=100):  # Process in small batches
     embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
@@ -119,6 +83,10 @@ def load_vector_db():
 
 vector_store =''
 
+
+import json
+
+
 def init(): 
     '''
     - fetch documents
@@ -137,30 +105,29 @@ def init():
     print("Fetching documents...")
     fetch_start = time.time()
     df = fetch_documents() 
-    fetch_end = time.time()
-    print(df.shape) 
+    df = df['results'].apply(pd.Series)
+    fetch_end = time.time() 
     print(f"✅ Documents fetched in {fetch_end - fetch_start:.2f} seconds")
     
-    # print("Chunking text...")
-    # chunk_start = time.time()
-    # chunks = chunk_text(df)    
-    # chunk_end = time.time()
-    # print(f"✅ Text chunked in {chunk_end - chunk_start:.2f} seconds")
     
+    print("Chunking text...")
+    chunk_start = time.time()
+    chunks = chunk_text(df)    
+    chunk_end = time.time()
+    # print(f"✅ Text chunked in {chunk_end - chunk_start:.2f} seconds")
     # print("Creating vector database...")
     # vector_start = time.time()
     # vector_store = create_vector_db(chunks) 
     # vector_end = time.time()
     # print(f"✅ Vector database created in {vector_end - vector_start:.2f} seconds")
     
-    total_time = time.time() - start_time
-    print(df)
+    total_time = time.time() - start_time 
     print("*************************************************")
     print(f"🚀 Process completed in {total_time:.2f} seconds")
     print("*************************************************")
     data = {
-        "time_taken_to_get_docs": total_time, 
-        "data": df
+        "time_taken_to_get_docs": total_time,   
+        "chunk":len(chunks),
+        "data": json.loads(df.to_json(orient="records")) 
     }
-
     return data
