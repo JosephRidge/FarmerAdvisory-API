@@ -7,13 +7,12 @@
 Running:  
 `fastapi dev main.py`
 
-
-
-## **Endpoints:** 
+## **Endpoints:**
 
 **path**: `{BASE_URL}/fetch-data`
 
 **Output**:
+
 ```json
     {
     "documents": {
@@ -117,7 +116,7 @@ Running:
                 .................]
         }]
 
-        
+
     }}
 ```
 
@@ -125,13 +124,14 @@ Running:
 
 ![alt text](data-ingestion.png)
 
-- Data Ingestion Module: 
-Features: 
+- Data Ingestion Module:
+  Features:
 - Fetch data from CORE
-- Chunk the data 
+- Chunk the data
 - Create Embeddings
 
 Time taken:
+
 - Whole procedure: 23 minutes
 - Articles: 264 (took 4.82 secs to fetch)
-- Chunks: 30048 (took 3.81 secs to chunk - Recursively)  
+- Chunks: 30048 (took 3.81 secs to chunk - Recursively)
