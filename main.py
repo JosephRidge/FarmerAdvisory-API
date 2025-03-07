@@ -6,15 +6,6 @@ from utility import fetch_documents, init, chunk_text
 from contextlib import asynccontextmanager
 import asyncio
 
-
-# lifespan to run task at start-up
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     print("API is initializing... 🚀")
-#     await init()
-#     yield  # API becomes available immediately
-#     print("API shutdown...")
-
 app = FastAPI(
     title="Farmer Advisor - API",
     version="1.0" )
@@ -29,10 +20,6 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-@app.get("/fetch-data")
-def get_data():
-    return { "documents":fetch_documents() }
 
 @app.get("/fetch-research")
 def get_data(): 

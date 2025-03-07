@@ -8,12 +8,12 @@ from langchain_chroma import Chroma
 from dotenv import load_dotenv
 from typing import List
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
-from langchain.chains import RetrievalQA
+from langchain_ollama.llms import OllamaLLM 
 from concurrent.futures import ProcessPoolExecutor
 import time
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
+import json
  
 # Load environment variables from .env file
 load_dotenv()
@@ -21,6 +21,8 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 BASE_URL = os.getenv("BASE_URL")
 
+
+vector_store =''
 
 def query_api(query:str, scrollId=None, ):
     headers={"Authorization":"Bearer "+API_KEY}
@@ -31,7 +33,7 @@ def query_api(query:str, scrollId=None, ):
     return response.json(), response.elapsed.total_seconds()
  
 def to_data_frame(data:List[dict]):
-    return pd.DataFrame(data) #[0]['results']
+    return pd.DataFrame(data)
 
 def fetch_documents(): 
     '''
@@ -39,10 +41,8 @@ def fetch_documents():
     Convert API results to DataFrames
     Combine DataFrames efficiently
     '''
-    with ThreadPoolExecutor() as executor:  # Use threading instead of multiprocessing
+    with ThreadPoolExecutor() as executor:  # Using threading instead of multiprocessing
         query_results = list(executor.map(query_api, queries.values()))  
-
-    # Ensure only JSON data is passed to to_data_frame()
     query_results = [result[0] for result in query_results]  
 
     dataframes = [to_data_frame(result) for result in query_results]
@@ -59,7 +59,7 @@ def chunk_text(combined_corpus_df):
     return all_chunks
 
 
-def create_vector_db(chunks, batch_size=100):  # Process in small batches
+def create_vector_db(chunks, batch_size=100):  # Processing in small batches
     embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_store = Chroma(
         collection_name="farm_advisor",
@@ -80,12 +80,6 @@ def load_vector_db():
     )
     return vector_store 
 
-vector_store =''
-
-
-import json
-
-
 def init(): 
     '''
     - fetch documents
@@ -94,7 +88,6 @@ def init():
     - embed to vector_db (You can append more data to it) 
     '''
     start_time = time.time()
-    
     print("*************************************************")
     print("Fetching documents...")
     fetch_start = time.time()
@@ -102,20 +95,17 @@ def init():
     df = df['results'].apply(pd.Series)
     fetch_end = time.time() 
     print(f"✅ Documents fetched in {fetch_end - fetch_start:.2f} seconds")
-
     print("Chunking text...")
     chunk_start = time.time()
     chunks = chunk_text(df)    
     chunk_end = time.time() 
-
     print(f"✅ Text chunked in {chunk_end - chunk_start:.2f} seconds")
     print("Creating vector database...")
     vector_start = time.time()
-    vector_store = create_vector_db(chunks[0])  
+    vector_store = create_vector_db(chunks)  
     chroma_vector_DB_status = "created"
     vector_end = time.time()
     print(f"✅ Vector database created in {vector_end - vector_start:.2f} seconds")
-    
     total_time = time.time() - start_time 
     print("*************************************************")
     print(f"🚀 Process completed in {total_time:.2f} seconds")
