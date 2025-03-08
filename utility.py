@@ -51,7 +51,6 @@ def fetch_documents():
 
 def chunk_text(combined_corpus_df):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    print(combined_corpus_df)
     with ThreadPoolExecutor() as executor:
         all_chunks = list(executor.map(text_splitter.split_text, combined_corpus_df['fullText'].dropna()))
     # Flatten the list
@@ -94,11 +93,6 @@ def init():
     - chunking
     - embed to vector_db (You can append more data to it) 
     '''
-    # df = fetch_documents()
-    # file_path = os.path.join(DATA_DIR, "data.csv")
-    # df.to_csv(file_path, index=False)
-    # chunks = chunk_text(df)    
-    # create_vector_db(chunks)
     start_time = time.time()
     
     print("*************************************************")
@@ -108,26 +102,28 @@ def init():
     df = df['results'].apply(pd.Series)
     fetch_end = time.time() 
     print(f"✅ Documents fetched in {fetch_end - fetch_start:.2f} seconds")
-    
-    
+
     print("Chunking text...")
     chunk_start = time.time()
     chunks = chunk_text(df)    
-    chunk_end = time.time()
-    # print(f"✅ Text chunked in {chunk_end - chunk_start:.2f} seconds")
-    # print("Creating vector database...")
-    # vector_start = time.time()
-    # vector_store = create_vector_db(chunks) 
-    # vector_end = time.time()
-    # print(f"✅ Vector database created in {vector_end - vector_start:.2f} seconds")
+    chunk_end = time.time() 
+
+    print(f"✅ Text chunked in {chunk_end - chunk_start:.2f} seconds")
+    print("Creating vector database...")
+    vector_start = time.time()
+    vector_store = create_vector_db(chunks[0])  
+    chroma_vector_DB_status = "created"
+    vector_end = time.time()
+    print(f"✅ Vector database created in {vector_end - vector_start:.2f} seconds")
     
     total_time = time.time() - start_time 
     print("*************************************************")
     print(f"🚀 Process completed in {total_time:.2f} seconds")
     print("*************************************************")
     data = {
-        "time_taken_to_get_docs": total_time,   
+        "time_taken": total_time,   
         "chunk":len(chunks),
+        "chroma_vector_DB_status":chroma_vector_DB_status,
         "data": json.loads(df.to_json(orient="records")) 
     }
     return data
