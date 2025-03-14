@@ -117,3 +117,4 @@ def init():
         "data": json.loads(df.to_json(orient="records")) 
     }
     return data
+
