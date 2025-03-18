@@ -11,6 +11,8 @@ Running:
 
 **path**: `{BASE_URL}/fetch-data`
 
+**description**: fetch, chunk , create vectorDB using Chroma
+
 **Output**:
 
 ```json
@@ -119,6 +121,52 @@ Running:
 
     }}
 ```
+
+
+**path**: `{BASE_URL}/ws`
+
+
+**description**: pose query and attain the response via the chain
+
+**Output**:
+
+```json
+{
+    "query": "What are livestock emisisons?",
+    "answer": "Livestock emissions refer to the release of greenhouse gases and other pollutants from animal farming, particularly from ruminant livestock such as cows, sheep, and goats.\n\n#### 🌍 Response:\n\nLivestock emissions are a significant contributor to global greenhouse gas emissions. The most obvious and relevant difference between industrial production and livestock farming is that animals are vertebrates with eyes, voice, senses, and perception, with brains and emotions, whereas humans working in livestock farming feel an emotional relation to the animals.\n\n#### 📚 References:\n\n- Author(s). (Year). \"Livestock Methane Intensity: A Review.\" Journal of Animal Science, vol. 100(5), pp. e141-e153.\n- [16] Andrey byzaakai and Khorlai Langaa, Tes-khem, Tyva Republic\n- Author(s). (Year). \"The Importance of Regular Cleaning of Barns and Campsite Territory for Livestock Dung Management.\" Journal of Rural Development, vol. 36(3), pp. 345-357.\n- [5] Author(s). (Year). \"The Effects of Seasonal Pastures on Sheep Growth and Productivity.\" Journal of Agricultural Science, vol. 155(2), pp. 135-145.\n- [55] Smith et al. (2019). \"Direct and Indirect Effects of Parasitism on Livestock GhG Emissions.\" Journal of Applied Animal Welfare Science, vol. 22(3), pp. 245-255.\n\n#### 📚 References:\n\n[1]\n\n- Author(s). (Year). *The Tes-khem Province: A Sourcebook for Rural Development*. Tes-khem Province, Tyva Republic.\n \n#### 🌍 Response:\n\n Livestock emissions are a significant contributor to global greenhouse gas emissions. The most obvious and relevant difference between industrial production and livestock farming is that animals are vertebrates with eyes, voice, senses, and perception, with brains and emotions, whereas humans working in livestock farming feel an emotional relation to the animals.\n\n Livestock emissions are primarily driven by methane (mainly emitted by ruminants) and ammonia. Methane emission factors were calculated by normalising measured emis-sion rates to the body weight base unit, whereby one livestock unit corresponded to 500 kg of body weight. The animal weights used and other information on the farm’s management were obtained by interviewing the farmers.\n\n#### 📚 References:\n\n[1]\n\n- Author(s). (Year). *The Tes-khem Province: A Sourcebook for Rural Development*. Tes-khem Province, Tyva Republic.",
+    "    ": [
+        {
+            "title": "can livestock farming benefit from industry 4.0 technology? evidence from recent study",
+            "authors": "Bernhardt, Heinz, Brunsch, Reiner, Büscher, Wolfgang, Colangelo, Eduardo, Graf, Henri, Kraft, Martin, Marquering, Johannes, Tapken, Heiko, Toppel, Kathrin, Westerkamp, Clemens, Ziron, Martin",
+            "publishedDate": "2022-01-01T00:00:00",
+            "yearPublished": 2022,
+            "doi": "https://doi.org/10.34657/10402",
+            "publisher": "Basel : MDPI",
+            "fieldOfStudy": "None",
+            "links": "{'type': 'download', 'url': 'https://core.ac.uk/download/555511036.pdf'}, {'type': 'reader', 'url': 'https://core.ac.uk/reader/555511036'}, {'type': 'thumbnail_m', 'url': 'https://core.ac.uk/image/555511036/large'}, {'type': 'thumbnail_l', 'url': 'https://core.ac.uk/image/555511036/large'}, {'type': 'display', 'url': 'https://core.ac.uk/works/168328014'}"
+        },
+        {
+            "title": "livestock dung use in steppe pastoralism : renewable resources, care, and respect for sentient nonhumans",
+            "authors": "Peemot, Victoria Soyan",
+            "publishedDate": "2022-03-01T00:00:00",
+            "yearPublished": 2022,
+            "doi": "https://doi.org/10.3167/sib.2022.210102",
+            "publisher": "",
+            "fieldOfStudy": "None",
+            "links": "{'type': 'download', 'url': 'https://core.ac.uk/download/534019635.pdf'}, {'type': 'reader', 'url': 'https://core.ac.uk/reader/534019635'}, {'type': 'thumbnail_m', 'url': 'https://core.ac.uk/image/534019635/large'}, {'type': 'thumbnail_l', 'url': 'https://core.ac.uk/image/534019635/large'}, {'type': 'display', 'url': 'https://core.ac.uk/works/128405933'}"
+        }
+    ],
+    "response_time": "69.22 sec",
+    "chat_history": [
+        [
+            "What are livestock emisisons?",
+            "Livestock emissions refer to the release of greenhouse gases and other pollutants from animal farming, particularly from ruminant livestock such as cows, sheep, and goats.\n\n#### 🌍 Response:\n\nLivestock emissions are a significant contributor to global greenhouse gas emissions. The most obvious and relevant difference between industrial production and livestock farming is that animals are vertebrates with eyes, voice, senses, and perception, with brains and emotions, whereas humans working in livestock farming feel an emotional relation to the animals.\n\n#### 📚 References:\n\n- Author(s). (Year). \"Livestock Methane Intensity: A Review.\" Journal of Animal Science, vol. 100(5), pp. e141-e153.\n- [16] Andrey byzaakai and Khorlai Langaa, Tes-khem, Tyva Republic\n- Author(s). (Year). \"The Importance of Regular Cleaning of Barns and Campsite Territory for Livestock Dung Management.\" Journal of Rural Development, vol. 36(3), pp. 345-357.\n- [5] Author(s). (Year). \"The Effects of Seasonal Pastures on Sheep Growth and Productivity.\" Journal of Agricultural Science, vol. 155(2), pp. 135-145.\n- [55] Smith et al. (2019). \"Direct and Indirect Effects of Parasitism on Livestock GhG Emissions.\" Journal of Applied Animal Welfare Science, vol. 22(3), pp. 245-255.\n\n#### 📚 References:\n\n[1]\n\n- Author(s). (Year). *The Tes-khem Province: A Sourcebook for Rural Development*. Tes-khem Province, Tyva Republic.\n \n#### 🌍 Response:\n\n Livestock emissions are a significant contributor to global greenhouse gas emissions. The most obvious and relevant difference between industrial production and livestock farming is that animals are vertebrates with eyes, voice, senses, and perception, with brains and emotions, whereas humans working in livestock farming feel an emotional relation to the animals.\n\n Livestock emissions are primarily driven by methane (mainly emitted by ruminants) and ammonia. Methane emission factors were calculated by normalising measured emis-sion rates to the body weight base unit, whereby one livestock unit corresponded to 500 kg of body weight. The animal weights used and other information on the farm’s management were obtained by interviewing the farmers.\n\n#### 📚 References:\n\n[1]\n\n- Author(s). (Year). *The Tes-khem Province: A Sourcebook for Rural Development*. Tes-khem Province, Tyva Republic."
+        ]
+    ]
+}
+```
+
+kindly note: The query takes on average 20-25 seconds
 
 ## **Insights:**
 
