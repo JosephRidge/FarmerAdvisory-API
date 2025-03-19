@@ -105,6 +105,7 @@ def chunk_text(combined_corpus_df):
         # Extract and process metadata fields
         title = row.get("title", "")
         authors = row.get("authors", "")
+        
         # Convert authors (a list of dicts) into a comma-separated string if needed.
     # Extract authors as a comma-separated string
         if isinstance(authors, list):
@@ -115,8 +116,7 @@ def chunk_text(combined_corpus_df):
         # Extract metadata fields with default empty strings
         metadata = {
             "title": row.get("title", ""),
-            "authors": authors,
-            # "abstract": row.get("abstract", ""),
+            "authors": authors, 
             "publishedDate": row.get("publishedDate", ""),
             "yearPublished": row.get("yearPublished", ""),
             "doi": row.get("doi", ""),
