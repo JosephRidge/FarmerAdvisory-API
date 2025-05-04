@@ -9,30 +9,35 @@
     <h2>Farmer Precision Livestock Advisory</h2>
     <div id="chatbox" style="border: 1px solid black; padding: 10px; height: 300px; overflow-y: scroll;"></div>
     
-    <input type="text" id="message" placeholder="Type a message...">
+    <input type="text" id="message" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
     <button onclick="sendMessage()">Send</button>
 
     <script>
-        const socket = new WebSocket("ws://localhost:8000/ws");
+        const ws = new WebSocket("ws://localhost:8000/ws");
 
-        socket.onopen = function () {
+        ws.onopen = function () {
             console.log("✅ Connected to WebSocket");
         };
 
-        socket.onmessage = function (event) {
+        ws.onmessage = function (event) {
             console.log("📥 Received:", event.data);
 
-            // Append response to chatbox
-            const chatbox = document.getElementById("chatbox");
-            chatbox.innerHTML += `<p><b>mkulima genZ:</b> ${event.data}</p>`;
-            chatbox.scrollTop = chatbox.scrollHeight;
+            try {
+                const response = JSON.parse(event.data);
+                const chatbox = document.getElementById("chatbox");
+
+                chatbox.innerHTML += `<p><b>mkulima genZ:</b> ${response.answer || "No response"}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } catch (error) {
+                console.error("❌ Error parsing response:", error);
+            }
         };
 
-        socket.onerror = function (error) {
+        ws.onerror = function (error) {
             console.error("❌ WebSocket Error:", error);
         };
 
-        socket.onclose = function () {
+        ws.onclose = function () {
             console.warn("⚠️ WebSocket Connection Closed");
         };
 
@@ -40,17 +45,27 @@
             const inputField = document.getElementById("message");
             const messageText = inputField.value.trim();
 
-            if (messageText) {
-                // Display user message in chatbox
-                const chatbox = document.getElementById("chatbox");
-                chatbox.innerHTML += `<p><b>You:</b> ${messageText}</p>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
+            if (!messageText) return; // Prevent sending empty messages
 
-                // Send message to WebSocket server
-                socket.send(JSON.stringify({ query: messageText }));
-                
-                // Clear input field
-                inputField.value = "";
+            // Display user message in chatbox
+            const chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p><b>You:</b> ${messageText}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Send message to WebSocket server
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ query: messageText }));
+            } else {
+                console.warn("⚠️ WebSocket not connected.");
+            }
+            
+            // Clear input field
+            inputField.value = "";
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
             }
         }
     </script>
