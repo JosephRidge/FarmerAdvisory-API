@@ -1,4 +1,4 @@
 {
-    "buildCommand": "chmod +x setup.sh && ./setup.sh",
-    "startCommand": "./setup.sh"
+    "buildCommand": "pip install --only-binary :all: --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu -r requirements.txt",
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT"
   }
