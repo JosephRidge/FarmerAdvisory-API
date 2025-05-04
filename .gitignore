@@ -3,3 +3,6 @@ __pycache__
 chroma_langchain_db
 farmer_chroma_langchain_db
 index.faiss
+service.py
+ui.html
+models/token.txt

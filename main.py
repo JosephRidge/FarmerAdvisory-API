@@ -14,8 +14,10 @@ import heapq
 from functools import lru_cache
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import numpy as np
-# embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-# import util
+from llama_cpp import Llama
+from huggingface_hub import hf_hub_download 
+from pathlib import Path
+
 app = FastAPI(
     title="Farmer Advisor - API",
     version="1.0"
@@ -29,20 +31,34 @@ app.add_middleware(
 )
 
  
-# Define Retriever
+#  Retriever
 # retriever = vector_store.as_retriever(
 #     search_type="mmr", # mmr is computationally expensive
 #     search_kwargs={"k": 5, "fetch_k": 5, "lambda_mult": 0.6}
 # ) 
 
-
+MODEL_CACHE = str(Path.home() / ".cache" / "models")  # Better alternative
+Path(MODEL_CACHE).mkdir(parents=True, exist_ok=True)
 vector_store = load_vector_db()
-model = OllamaLLM(model="llama3.2:1b",
-    temperature=0,   
-    top_k=20,        
-    num_ctx=512,    
-    repeat_penalty=1.1,   
-    ) 
+# model = OllamaLLM(model="llama3.2:1b",
+#     temperature=0,   # high is creative but low makes it coherent
+#     top_k=20,        
+#     num_ctx=512,    
+#     repeat_penalty=1.1,   
+#     ) 
+model = Llama(
+    model_path=hf_hub_download(
+        repo_id="JayROgada/tendo.gguf",
+        filename="tendo.gguf",
+        cache_dir=MODEL_CACHE  # Persistent storage on Railway
+    ),
+    n_ctx=512,            # Matches your num_ctx
+    n_threads=4,          # Optimal for Railway's 2vCPU
+    temperature=0.0,     
+    top_k=20,             
+    repeat_penalty=1.1,   #  repetition control
+    n_gpu_layers=-1       # Auto-detect GPU layers if available
+)
 
 
 retriever = vector_store.as_retriever(
@@ -133,20 +149,13 @@ def remove_duplicates(combined_corpus_df):
         if pd.isna(text1) or pd.isna(text2):  # Handle NaN values
             return False
         return fuzz.ratio(text1, text2) >= threshold
-
-    # Compare each title with the title of the previous row
+ 
     combined_corpus_df['is_duplicate'] = combined_corpus_df.apply(
         lambda row: is_similar(row['title'], combined_corpus_df['title'].shift().loc[row.name]), 
         axis=1
     )
-
-    # Remove near-duplicates
     combined_corpus_df = combined_corpus_df[~combined_corpus_df['is_duplicate']]
-
-    # Drop the temporary 'is_duplicate' column
     combined_corpus_df = combined_corpus_df.drop(columns=['is_duplicate'])
-
-    # Check the shape of the deduplicated DataFrame
     return combined_corpus_df
 
 
@@ -154,27 +163,18 @@ def chunk_text(combined_corpus_df):
     combined_corpus_df= remove_duplicates(combined_corpus_df)
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     all_chunks = []
-    
-    # Iterate over each document (row) in the dataframe
     for _, row in combined_corpus_df.iterrows():
         full_text = row.get("fullText")
         if pd.isna(full_text):
             continue
-        # Split the full text into chunks
         chunks = text_splitter.split_text(full_text)
-        
-        # Extract and process metadata fields
         title = row.get("title", "")
-        authors = row.get("authors", "")
-        
-        # Convert authors (a list of dicts) into a comma-separated string if needed.
-    # Extract authors as a comma-separated string
+        authors = row.get("authors", "")        
         if isinstance(authors, list):
             authors = ", ".join(author.get("name", "") for author in authors if isinstance(author, dict))
         else:
             authors = str(authors)
 
-        # Extract metadata fields with default empty strings
         metadata = {
             "title": row.get("title", ""),
             "authors": authors, 
@@ -185,14 +185,11 @@ def chunk_text(combined_corpus_df):
             "documentType": row.get("documentType", ""),
             "fieldOfStudy": row.get("fieldOfStudy", ""),
             "journals": row.get("journals", ""),
-            "sourceFulltextUrls": row.get("sourceFulltextUrls", []),  # List of URLs
-            "links": row.get("links", []),  # Additional links, if available
+            "sourceFulltextUrls": row.get("sourceFulltextUrls", []),  
+            "links": row.get("links", []),  
  }
 
-        # Filter metadata to ensure all values are simple types (str, int, etc.)
         metadata = simple_filter_metadata(metadata)
-        
-        # Attach the metadata to each text chunk
         for chunk in chunks:
             all_chunks.append({"text": chunk, "metadata": metadata})
             
@@ -209,11 +206,9 @@ def simple_filter_metadata(metadata: dict) -> dict:
         if isinstance(value, (str, int, float, bool)):
             simple_metadata[key] = value
         elif isinstance(value, list):
-            # Check if it's a list of dicts with a 'name' key.
             if all(isinstance(item, dict) and "name" in item for item in value):
                 simple_metadata[key] = ", ".join(item["name"] for item in value)
             else:
-                # Otherwise, just join as strings.
                 simple_metadata[key] = ", ".join(str(item) for item in value)
         else:
             simple_metadata[key] = str(value)
@@ -224,7 +219,7 @@ def create_vector_db(chunks, batch_size=100):
     vector_store = Chroma(
         collection_name="farm_advicer",
         embedding_function=embedding_function,
-        persist_directory="chroma_langchain_db",  # Use a consistent directory, e.g., VECTOR_DB_DIR = "./chroma_langchain_db"
+        persist_directory="chroma_langchain_db",  
     )
     # Process chunks in batches
     for i in tqdm(range(0, len(chunks), batch_size)):
@@ -339,7 +334,7 @@ Example Response Format:
 **🔍 Precision Livestock Farming**  
 *Why It Matters:* Using sensors and AI can optimize feed, reducing emissions.  
 *Practical Tip:* Invest in precision feeding tools to cut feed waste and emissions.  
- 
+
 """)
 
 
