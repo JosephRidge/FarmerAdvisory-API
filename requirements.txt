@@ -167,7 +167,8 @@ zipp==3.21.0
 zope.event==5.0
 zope.interface==7.2
 zstandard==0.23.0
-llama-cpp-python --prefer-binary --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python==0.2.23 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+# Other dependencies
 huggingface-hub>=0.16.0
 fastapi>=0.95.0
 uvicorn>=0.22.0
