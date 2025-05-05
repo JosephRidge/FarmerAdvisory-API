@@ -166,6 +166,6 @@ zipp==3.21.0
 zope.event==5.0
 zope.interface==7.2
 zstandard==0.23.0
---extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu  
 huggingface-hub
-fastapi 
+git+https://github.com/abetlen/llama-cpp-python.git
