@@ -172,3 +172,4 @@ llama-cpp-python==0.2.23
 huggingface-hub
 fastapi
 uvicorn
+cmake<3.21
