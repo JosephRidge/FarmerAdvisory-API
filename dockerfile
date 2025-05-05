@@ -11,22 +11,24 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Install Python dependencies from requirements.txt
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Clone llama-cpp-python with submodules
 RUN git clone --recurse-submodules https://github.com/abetlen/llama-cpp-python.git
+
+# Build and install llama_cpp from source
 WORKDIR /app/llama-cpp-python
 RUN pip install .
 
 # Return to app directory
 WORKDIR /app
 
-# Copy app code
+# Copy your app code
 COPY . .
 
-# Expose app port
+# Expose your app's port
 EXPOSE 8000
 
 # Run your app
