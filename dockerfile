@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# Install build dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -11,25 +11,29 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Install Python dependencies from requirements.txt
+# Install Python dependencies except llama-cpp-python
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip
 
-# Clone llama-cpp-python with submodules
+# If llama-cpp-python is in requirements.txt, REMOVE it there and install it manually
+# Clone llama-cpp-python from source
 RUN git clone --recurse-submodules https://github.com/abetlen/llama-cpp-python.git
 
-# Build and install llama_cpp from source
+# Install llama-cpp-python from source
 WORKDIR /app/llama-cpp-python
 RUN pip install .
 
 # Return to app directory
 WORKDIR /app
 
-# Copy your app code
+# Copy the rest of your code
 COPY . .
 
-# Expose your app's port
+# Install the remaining dependencies (excluding llama-cpp-python)
+RUN pip install -r requirements.txt
+
+# Expose your app port
 EXPOSE 8000
 
-# Run your app
+# Run the app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
