@@ -168,7 +168,5 @@ zope.event==5.0
 zope.interface==7.2
 zstandard==0.23.0
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python==0.2.23
 huggingface-hub
-fastapi
-uvicorn 
+fastapi 
